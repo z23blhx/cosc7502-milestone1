@@ -1,0 +1,35 @@
+V2 CONTIGUOUS-GRID WORKING NOTES
+================================
+
+Source freeze
+-------------
+Commit: eb599a441f759ace2fd3a693e51baf73dc568321
+Tag: v2_contiguous_grid
+
+Controlled change
+-----------------
+Replace each separately allocated `vector<vector<uint8_t>>` grid with one
+`vector<uint8_t>` in row-major order. Coordinates map to `y * width + x`, so
+cells with adjacent x coordinates are adjacent in the allocation. V1's four
+precomputed wrapped-coordinate arrays remain unchanged, as do the neighbour
+loops, Life rule, double buffer, cell type, traversal, interface, and flags.
+
+Hypothesis
+----------
+Contiguous row-major storage may reduce row indirection and make sequential
+memory access more locality/compiler friendly. This is a hypothesis to measure,
+not a claim that cache behaviour has already improved.
+
+Local correctness
+-----------------
+Existing suite: PASS: 6 correctness tests.
+Direct V0/V1/V2 comparisons matched live counts and checksums for 1x1, 2x3,
+101x101, 64x64, and rectangular 73x41 deterministic workloads.
+
+Rangpur login-node validation
+-----------------------------
+Checked-out HEAD and tag: eb599a441f759ace2fd3a693e51baf73dc568321
+Existing suite: PASS: 6 correctness tests.
+Tiny 101x101, 10-generation sanity result: live_cells=2213,
+checksum=7897773207305806522, matching V0/V1. Login-node time is not formal
+benchmark evidence.
