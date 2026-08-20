@@ -35,7 +35,7 @@ echo "slurm_memory_request=none (cluster nodes report MEMORY=1 MB)"
 echo "slurm_account=cosc3500"
 g++ --version
 lscpu
-scontrol show job "${SLURM_JOB_ID}"
+/opt/slurm/bin/scontrol show job "${SLURM_JOB_ID}"
 
 echo "=== V0 EXPLORATORY RESULTS ==="
 echo "version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum"

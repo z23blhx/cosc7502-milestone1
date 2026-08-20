@@ -74,3 +74,11 @@ identical generation counts and stable measurements while leaving about 4.5
 minutes of wall-time margin. Sizes 101 and 256 were excluded because their
 runs were too short; 4096 was excluded because five runs would be unnecessarily
 long for the available QOS limit.
+
+Formal job startup correction
+-----------------------------
+Job 562435 was submitted after the QOS correction but failed after one second
+with ExitCode 127:0 because a non-interactive SSH submission did not export
+/opt/slurm/bin into the job environment, so `scontrol` was not found. The
+scripts were updated to call /opt/slurm/bin/scontrol explicitly. No benchmark
+rows were produced by this failed job.

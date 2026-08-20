@@ -66,7 +66,7 @@ sizes=(512 1024 2048)
     echo
     lscpu
     echo
-    scontrol show job "${SLURM_JOB_ID}"
+    /opt/slurm/bin/scontrol show job "${SLURM_JOB_ID}"
 } > "${environment_file}"
 
 header="timestamp,version,source_commit,tag,evidence_commit,grid_width,grid_height,generations,density,seed,run_number,elapsed_seconds,live_cells,checksum,hostname,job_id,compiler,compiler_version,compiler_flags"
