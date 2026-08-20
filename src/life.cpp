@@ -77,18 +77,18 @@ bool Life::alive(std::size_t x, std::size_t y) const {
 }
 
 unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
-    const std::size_t neighbour_x[3] = {x_prev_[x], x, x_next_[x]};
-    const std::size_t neighbour_y[3] = {y_prev_[y], y, y_next_[y]};
-    unsigned count = 0;
-    for (int dy = -1; dy <= 1; ++dy) {
-        for (int dx = -1; dx <= 1; ++dx) {
-            if (dx == 0 && dy == 0) {
-                continue;
-            }
-            count += current_[neighbour_y[dy + 1] * width_ + neighbour_x[dx + 1]];
-        }
-    }
-    return count;
+    const std::size_t xm = x_prev_[x];
+    const std::size_t xp = x_next_[x];
+    const std::size_t row_above = y_prev_[y] * width_;
+    const std::size_t row_here = y * width_;
+    const std::size_t row_below = y_next_[y] * width_;
+
+    // A Moore neighbourhood always contains these eight cells, so a generic
+    // 3x3 loop and centre-skip branch are unnecessary.
+    return current_[row_above + xm] + current_[row_above + x] +
+           current_[row_above + xp] + current_[row_here + xm] +
+           current_[row_here + xp] + current_[row_below + xm] +
+           current_[row_below + x] + current_[row_below + xp];
 }
 
 void Life::step() {
