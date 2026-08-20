@@ -1,0 +1,39 @@
+V0 BASELINE WORKING NOTES
+=========================
+
+Source freeze
+-------------
+Commit: 15e13cd499178bc80740b710912679aef8c2f037
+Tag: v0_baseline
+Commit time: 2026-08-20T23:10:03+10:00
+Tag time: 2026-08-20T23:25:33+10:00
+
+Local Windows validation (sanity only; not formal benchmark evidence)
+---------------------------------------------------------------------
+Command: mingw32-make test
+Result: PASS: 6 correctness tests
+
+Command: build/benchmark/life --size 101 --generations 10 --density 35 --seed 12345 --csv
+Result: v0_baseline,101,101,10,35,12345,0.0017853,2213,7897773207305806522
+
+Rangpur login-node validation (sanity only; not formal benchmark evidence)
+----------------------------------------------------------------------------
+Date observed: 2026-08-20 (Australia/Brisbane)
+Login host: login0.compute.eait.uq.edu.au
+Compiler: g++ (GCC) 8.5.0 20210514 (Red Hat 8.5.0-28)
+gprof: GNU gprof 2.30-128.el8_10
+Checked-out commit: 15e13cd499178bc80740b710912679aef8c2f037
+Git state: detached at v0_baseline
+Correctness: PASS: 6 correctness tests
+
+Command: build/benchmark/life --size 101 --generations 10 --density 35 --seed 12345 --csv
+Result: v0_baseline,101,101,10,35,12345,0.003185838,2213,7897773207305806522
+
+The live-cell count and checksum match the local run. Neither timing above is
+used as formal Milestone 1 benchmark evidence.
+
+Exploratory plan
+----------------
+Run 100 generations once for candidate square sizes 101, 256, 512, 1024,
+2048, and 4096 on one Rangpur compute node. Use the observed runtimes only to
+select a stable and reasonable final benchmark matrix.
