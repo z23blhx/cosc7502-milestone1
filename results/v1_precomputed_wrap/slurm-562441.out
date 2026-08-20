@@ -1,0 +1,4 @@
+profile_file=results/v1_precomputed_wrap/profile-562441.txt
+version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum
+v1_precomputed_wrap,2048,2048,1000,35,12345,92.7033395,179032,8829134737923947969
+=== V1 PRECOMPUTED-WRAP PROFILE COMPLETE ===

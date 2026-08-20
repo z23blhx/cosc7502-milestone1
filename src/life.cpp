@@ -9,9 +9,25 @@ Life::Life(std::size_t width, std::size_t height)
     : width_(width),
       height_(height),
       current_(height, std::vector<Cell>(width, 0)),
-      next_(height, std::vector<Cell>(width, 0)) {
+      next_(height, std::vector<Cell>(width, 0)),
+      x_prev_(width),
+      x_next_(width),
+      y_prev_(height),
+      y_next_(height) {
     if (width == 0 || height == 0) {
         throw std::invalid_argument("grid dimensions must be positive");
+    }
+
+    // Toroidal neighbours depend only on the grid dimensions. Precomputing
+    // these four lookups avoids recalculating wrapped coordinates for every
+    // neighbour of every cell in every generation.
+    for (std::size_t x = 0; x < width_; ++x) {
+        x_prev_[x] = (x == 0) ? width_ - 1 : x - 1;
+        x_next_[x] = (x + 1 == width_) ? 0 : x + 1;
+    }
+    for (std::size_t y = 0; y < height_; ++y) {
+        y_prev_[y] = (y == 0) ? height_ - 1 : y - 1;
+        y_next_[y] = (y + 1 == height_) ? 0 : y + 1;
     }
 }
 std::size_t Life::width() const noexcept {
@@ -66,21 +82,16 @@ bool Life::alive(std::size_t x, std::size_t y) const {
     return current_[y][x] != 0;
 }
 
-std::size_t Life::wrap(long long coordinate, std::size_t extent) noexcept {
-    const auto signed_extent = static_cast<long long>(extent);
-    return static_cast<std::size_t>((coordinate + signed_extent) % signed_extent);
-}
-
 unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
+    const std::size_t neighbour_x[3] = {x_prev_[x], x, x_next_[x]};
+    const std::size_t neighbour_y[3] = {y_prev_[y], y, y_next_[y]};
     unsigned count = 0;
     for (int dy = -1; dy <= 1; ++dy) {
         for (int dx = -1; dx <= 1; ++dx) {
             if (dx == 0 && dy == 0) {
                 continue;
             }
-            const auto neighbour_x = wrap(static_cast<long long>(x) + dx, width_);
-            const auto neighbour_y = wrap(static_cast<long long>(y) + dy, height_);
-            count += current_[neighbour_y][neighbour_x];
+            count += current_[neighbour_y[dy + 1]][neighbour_x[dx + 1]];
         }
     }
     return count;

@@ -28,13 +28,16 @@ public:
 private:
     using Grid = std::vector<std::vector<Cell>>;
 
-    static std::size_t wrap(long long coordinate, std::size_t extent) noexcept;
     unsigned live_neighbours(std::size_t x, std::size_t y) const noexcept;
 
     std::size_t width_;
     std::size_t height_;
     Grid current_;
     Grid next_;
+    std::vector<std::size_t> x_prev_;
+    std::vector<std::size_t> x_next_;
+    std::vector<std::size_t> y_prev_;
+    std::vector<std::size_t> y_next_;
 };
 
 #endif
