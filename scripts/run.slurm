@@ -8,7 +8,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=00:15:00
-#SBATCH --output=slurm/v0-explore-%j.out
+#SBATCH --output=slurm-%j.out
 
 # No memory directive is used. On 2026-08-20, every cosc3500 node reported
 # MEMORY=1 MB to Slurm despite substantially larger FREE_MEM values. A 1 GiB
@@ -27,8 +27,9 @@ echo "=== V0 EXPLORATORY ENVIRONMENT ==="
 date --iso-8601=seconds
 hostname
 uname -a
-echo "git_commit=$(git rev-parse HEAD)"
-echo "git_tag=$(git describe --tags --exact-match HEAD 2>/dev/null || echo untagged)"
+echo "source_commit=$(git rev-list -n 1 v0_baseline)"
+echo "source_tag=v0_baseline"
+echo "evidence_commit=$(git rev-parse HEAD)"
 echo "compiler_flags=-std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG"
 echo "slurm_memory_request=none (cluster nodes report MEMORY=1 MB)"
 echo "slurm_account=cosc3500"

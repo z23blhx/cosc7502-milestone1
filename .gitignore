@@ -5,6 +5,7 @@ COSC7502_Milestone1_UQ_Slurm_Guide.md
 
 # Build products
 build/
+work/
 life.exe
 life_tests.exe
 life

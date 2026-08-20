@@ -52,3 +52,22 @@ with Reason=PartitionConfig. `scontrol show job` reported Account=s4828704,
 whereas `scontrol show partition cosc3500` reported AllowAccounts=cosc3500 and
 `sacctmgr show assoc` confirmed that the user has the cosc3500 association.
 The Slurm script was therefore updated to request account cosc3500 explicitly.
+
+Completed exploratory run
+-------------------------
+Job 562431 ran successfully on compute node a100-0 and `sacct` reported
+COMPLETED with ExitCode 0:0. For 100 generations, observed runtimes were:
+101: 0.029830707 s; 256: 0.189334888 s; 512: 0.754744665 s;
+1024: 3.01472788 s; 2048: 12.0281161 s; 4096: 48.2452432 s.
+The custom output path triggered a site task-epilog warning, so later scripts
+use the site's default slurm-%j.out path.
+
+Final benchmark matrix decision
+-------------------------------
+Use square sizes 512, 1024, and 2048; 1000 generations; density 35%; seed
+12345; and 5 repetitions per size. Expected runtimes from the exploratory run
+are approximately 7.5, 30, and 120 seconds per repetition. This gives stable
+measurements with identical generation counts while fitting the full matrix in
+roughly 13 minutes. Sizes 101 and 256 were excluded because 100-generation
+runs were too short; 4096 was excluded because five 1000-generation runs would
+take roughly 40 minutes before overhead.
