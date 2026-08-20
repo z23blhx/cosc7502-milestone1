@@ -1,0 +1,34 @@
+V1 PRECOMPUTED-WRAP WORKING NOTES
+=================================
+
+Source freeze
+-------------
+Commit: b6f45e2596b0babb0565697c7250c3ab039f4511
+Tag: v1_precomputed_wrap
+
+Controlled change
+-----------------
+Precompute previous/next wrapped indices for every x and y coordinate once in
+the Life constructor, then reuse them inside the existing nested neighbour
+loop. The two-dimensional byte grid, two-buffer update, Life rule, traversal,
+compiler flags, and benchmark interface remain unchanged.
+
+Hypothesis
+----------
+Removing repeated wrapped coordinate/modulo calculations from the measured
+96.61% V0 neighbour-calculation hotspot may reduce instruction overhead. This
+does not claim a cache or memory-bandwidth improvement.
+
+Local correctness
+-----------------
+Existing suite: PASS: 6 correctness tests.
+Direct V0/V1 comparisons also matched live counts and checksums for 1x1, 2x3,
+101x101, 64x64, and rectangular 73x41 deterministic workloads.
+
+Rangpur login-node validation
+-----------------------------
+Checked-out HEAD and tag: b6f45e2596b0babb0565697c7250c3ab039f4511
+Existing suite: PASS: 6 correctness tests.
+Tiny 101x101, 10-generation sanity result: live_cells=2213,
+checksum=7897773207305806522, matching V0. The login-node time is not formal
+benchmark evidence.
