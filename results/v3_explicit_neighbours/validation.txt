@@ -1,0 +1,60 @@
+V3 DATA VALIDATION REPORT
+=========================
+
+Overall assessment: READY TO SHARE
+As of: 2026-08-21 (Australia/Brisbane)
+
+Question
+--------
+Does explicit summation of the eight Moore neighbours improve V2 without
+changing correctness under the same formal UQ workload?
+
+Controlling evidence
+--------------------
+- V0/V1/V2 formal data: Slurm Jobs 562436, 562440, and 562443, a100-0.
+- V3 formal data: Slurm Job 562448, a100-0.
+- V0/V1/V2/V3 profiles: Jobs 562437, 562441, 562444, and 562449, a100-0.
+- Formal builds used GCC 8.5.0, identical `-O3 -DNDEBUG` flags, and one CPU.
+
+Methodology checks
+------------------
+PASS: identical sizes, generations, density, seed, repetitions, compiler,
+flags, node, partition, account, and requested resources across versions.
+PASS: three configurations and exactly five numbered V3 repetitions.
+PASS: all 15 elapsed times are positive; no runs were excluded.
+PASS: version, source commit, tag, hostname, and Slurm job are recorded.
+PASS: median is primary; mean, range, sample standard deviation, and CV remain.
+
+Correctness checks
+------------------
+PASS: each V3 repetition has consistent live-cell count and checksum.
+PASS: V3 correctness outputs match V0, V1, and V2 for every formal size.
+PASS: local tests, Rangpur tests, and five deterministic four-version cases pass.
+
+Calculation spot-checks
+-----------------------
+PASS: `analysis/summarise.py` regenerated V3 statistics from raw.csv.
+PASS: `analysis/compare_four_versions.py` verified all matrices, repetition
+counts, live-cell counts, and checksums before calculating speedups.
+PASS: an independent PowerShell calculation reproduced V3 speedups and runtime
+reductions after rounding.
+
+Results
+-------
+512: V3 1.010598950 s; 5.641080x vs V0; 1.052428x vs V2; CV 0.458922%.
+1024: V3 4.002820110 s; 5.686993x vs V0; 1.050783x vs V2; CV 0.114612%.
+2048: V3 16.074788300 s; 5.651842x vs V0; 1.052877x vs V2; CV 0.087315%.
+
+Reasonableness and caveats
+--------------------------
+- The approximately 5% incremental improvement is consistent across all sizes
+  and is larger than observed within-configuration variability.
+- Results establish performance for this workload and node, not every CPU,
+  compiler, density, seed, or grid shape.
+- Versions ran as separate Slurm jobs rather than randomized interleaved runs.
+- gprof instrumentation changes code generation; its wall and sampled times are
+  diagnostic, while formal claims use `-O3` medians.
+
+Blockers
+--------
+None for the Milestone 1 V3 comparison.
