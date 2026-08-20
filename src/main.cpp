@@ -114,12 +114,12 @@ int main(int argc, char* argv[]) {
 
         if (options.csv) {
             std::cout << "version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum\n";
-            std::cout << "v1_precomputed_wrap," << options.width << ',' << options.height << ','
+            std::cout << "v2_contiguous_grid," << options.width << ',' << options.height << ','
                       << options.generations << ',' << options.density << ',' << options.seed << ','
                       << std::setprecision(9) << elapsed.count() << ',' << simulation.live_count()
                       << ',' << simulation.checksum() << '\n';
         } else {
-            std::cout << "version: v1_precomputed_wrap\n"
+            std::cout << "version: v2_contiguous_grid\n"
                       << "grid: " << options.width << 'x' << options.height << '\n'
                       << "generations: " << options.generations << '\n'
                       << "density_percent: " << options.density << '\n'

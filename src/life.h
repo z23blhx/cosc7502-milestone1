@@ -26,7 +26,7 @@ public:
     std::uint64_t checksum() const noexcept;
 
 private:
-    using Grid = std::vector<std::vector<Cell>>;
+    using Grid = std::vector<Cell>;
 
     unsigned live_neighbours(std::size_t x, std::size_t y) const noexcept;
 
