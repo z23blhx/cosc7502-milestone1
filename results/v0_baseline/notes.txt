@@ -95,3 +95,17 @@ Median runtimes were 5.700869360 s (512), 22.764008200 s (1024), and
 and 0.092678%, respectively, indicating low run-to-run variability. Raw rows
 are preserved in raw.csv, the observed compute environment in environment.txt,
 and reproducible statistics in summary.csv via analysis/summarise.py.
+
+V0 profiling result
+-------------------
+Job 562437 completed successfully on a100-0 with ExitCode 0:0 in 00:03:28.
+The profiling build used -O2 -g -pg and the workload was 2048 x 2048 for 1000
+generations at density 35% and seed 12345. The program reported 207.768831 s,
+179032 live cells, and checksum 8829134737923947969.
+
+gprof attributed 96.61% (180.51 sampled seconds) to Life::live_neighbours over
+4,194,304,000 calls and 3.54% (6.61 seconds) to Life::step. It separately
+reported only 0.06% for Life::wrap, but -O2 may inline wrap work into
+live_neighbours, so the measured conclusion is that neighbour calculation is
+the dominant hotspot. Repeated modulo/wrapped-index work is a source-informed
+hypothesis to test independently in V1, not a separately proven bottleneck.

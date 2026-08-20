@@ -6,6 +6,8 @@ COSC7502_Milestone1_UQ_Slurm_Guide.md
 # Build products
 build/
 work/
+__pycache__/
+*.py[cod]
 life.exe
 life_tests.exe
 life

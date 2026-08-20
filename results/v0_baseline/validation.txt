@@ -1,0 +1,45 @@
+V0 BASELINE EVIDENCE VALIDATION
+===============================
+
+Overall assessment: READY TO SHARE as V0 baseline evidence.
+
+Scope
+-----
+Source tag v0_baseline was benchmarked on the UQ Rangpur cosc3500 partition.
+Formal timing source: Job 562436, 2026-08-21 Australia/Brisbane.
+Profiling source: Job 562437, 2026-08-21 Australia/Brisbane.
+
+Methodology checks
+------------------
+PASS - Life source/tests match v0_baseline.
+PASS - One serial task and one CPU were requested.
+PASS - All formal runs used the same compute node, compiler, flags, density,
+       seed, generation count, and Slurm resources.
+PASS - Three sizes had exactly five repetitions with run numbers 1 through 5.
+PASS - Timing excludes setup, checksum calculation, and console output.
+PASS - Raw data are retained and summary.csv is reproducible with
+       analysis/summarise.py.
+
+Calculation checks
+------------------
+PASS - raw.csv contains 15 data rows: 3 configurations x 5 repetitions.
+PASS - Each configuration has one live-cell count and one checksum across all
+       repetitions.
+PASS - Mean, median, minimum, maximum, sample standard deviation, and CV were
+       regenerated from raw.csv.
+PASS - Stable raw.csv and environment.txt are byte-identical to the downloaded
+       Job 562436 files.
+
+Profiling checks
+----------------
+PASS - Profiling ran through Slurm on a compute node and completed with 0:0.
+PASS - gprof measured live_neighbours as the dominant routine (96.61%).
+
+Required caveats
+----------------
+- The profile build used -O2 -g -pg rather than the -O3 benchmark build;
+  profile time is diagnostic and must not be compared with benchmark time.
+- gprof attribution may include inlined wrap work inside live_neighbours.
+- No evidence yet isolates modulo, cache locality, branches, or memory bandwidth
+  as independent causes. Those remain hypotheses for controlled experiments.
+- V0 speedup is the reference 1.00x; no optimisation speedup is calculated yet.
