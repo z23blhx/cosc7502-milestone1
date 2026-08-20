@@ -1,0 +1,64 @@
+V1 DATA VALIDATION REPORT
+=========================
+
+Overall assessment: READY TO SHARE
+As of: 2026-08-21 (Australia/Brisbane)
+
+Question
+--------
+Does precomputing wrapped neighbour indices improve the serial Game of Life
+baseline without changing correctness, under the same formal UQ workload?
+
+Controlling evidence
+--------------------
+- V0 raw and summary data: Slurm Job 562436, a100-0.
+- V1 raw and summary data: Slurm Job 562440, a100-0.
+- V0/V1 diagnostic profiles: Slurm Jobs 562437 and 562441, a100-0.
+- Formal builds used GCC 8.5.0 and identical `-O3 -DNDEBUG` flags.
+- Both formal jobs used one node, one task, and one CPU in `cosc3500`.
+
+Methodology checks
+------------------
+PASS: identical grid sizes, generations, density, seed, repetitions, compiler,
+compiler flags, node, and requested CPU resources.
+PASS: three configurations and exactly five numbered repetitions per version.
+PASS: all 15 elapsed times per version are positive.
+PASS: source version, source commit, tag, hostname, and Slurm job are recorded.
+PASS: median is the primary comparison statistic; mean, range, sample standard
+deviation, and coefficient of variation are also retained.
+
+Correctness checks
+------------------
+PASS: each V1 repetition has consistent live-cell count and checksum.
+PASS: V1 live-cell counts and checksums match V0 for every grid size.
+PASS: local tests, Rangpur tests, and extra deterministic V0/V1 cases passed.
+
+Calculation spot-checks
+-----------------------
+PASS: `analysis/summarise.py` regenerated all V1 summary statistics from raw.csv.
+PASS: `analysis/compare_versions.py` verified matrix and checksum equivalence.
+PASS: an independent PowerShell calculation reproduced all three speedups and
+runtime reductions after rounding.
+
+Results
+-------
+512:  V0 5.700869360 s; V1 1.276579850 s; 4.465737x; 77.607278% reduction.
+1024: V0 22.764008200 s; V1 5.069925500 s; 4.490008x; 77.728327% reduction.
+2048: V0 90.852169800 s; V1 20.354371500 s; 4.463521x; 77.596164% reduction.
+
+Reasonableness and caveats
+--------------------------
+- The speedup is consistent across all three sizes and much larger than the
+  within-configuration variation (all CVs below 0.3%).
+- Results establish performance for this workload and UQ node, not every CPU,
+  compiler, density, seed, or grid shape.
+- V0 and V1 were separate Slurm jobs rather than randomized interleaved trials;
+  use the recorded environment and low variation when interpreting portability.
+- gprof changes code generation and instrumentation. Its percentages and wall
+  times are diagnostic only; formal speedup claims use the `-O3` benchmark.
+- The experiment supports the combined precomputed-index change. It does not
+  quantify any single instruction or claim that modulo alone caused all gain.
+
+Blockers
+--------
+None for the Milestone 1 V1 comparison.

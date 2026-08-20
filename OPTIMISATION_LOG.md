@@ -43,3 +43,42 @@
   are small lookup arrays and slightly more setup complexity. V1 must reproduce
   V0 checksums and use the identical formal matrix.
 - **Decision:** Retained as `v0_baseline`.
+
+## V1 - precomputed wrapped indices
+
+- **Controlled change:** Added four constructor-initialised lookup arrays for
+  previous/next x and y coordinates. The existing nested neighbour loop reuses
+  these indices. The two-dimensional byte grid, two-buffer update, rule logic,
+  traversal, interface, benchmark matrix, and compiler flags remain unchanged.
+- **Hypothesis:** Removing repeated wrapped-coordinate calculations from the V0
+  neighbour hotspot will reduce inner-loop instruction overhead. This does not
+  predict a cache or memory-bandwidth improvement.
+- **Tag and source commit:** `v1_precomputed_wrap` at
+  `b6f45e2596b0babb0565697c7250c3ab039f4511`.
+- **Correctness:** Six tests passed locally and on Rangpur. Five additional
+  deterministic V0/V1 comparisons passed locally. All 15 formal V1 rows match
+  the corresponding V0 live-cell count and checksum.
+- **Formal benchmark:** Slurm Job 562440 ran on `a100-0` with the identical V0
+  matrix and resources: 512/1024/2048 square grids, 800 generations, density
+  35%, seed 12345, five repetitions, one node/task/CPU, GCC 8.5.0, and
+  `-O3 -DNDEBUG` plus the common warning flags.
+- **Results:** Median V1 runtimes were 1.276579850 s, 5.069925500 s, and
+  20.354371500 s. The respective V0-to-V1 speedups were 4.465737x, 4.490008x,
+  and 4.463521x; runtime reductions were 77.607278%, 77.728327%, and
+  77.596164%. V1 CVs were 0.279608%, 0.126138%, and 0.093286%.
+- **Profiling:** gprof Job 562441 used the matching V0 diagnostic workload and
+  `-O2 -g -pg` flags. `Life::live_neighbours` fell from 96.61% of V0 sampled
+  self time to 75.02% in V1, while `Life::step` rose from 3.54% to 22.94%.
+  The profile-build wall time fell from 207.768831 s to 92.7033395 s. These
+  profile figures diagnose hotspot movement; formal speedup uses the `-O3` data.
+- **Interpretation:** The 4.46-4.49x improvement is consistent across problem
+  sizes and far exceeds run-to-run variation. This supports the experiment's
+  combined precomputed-index hypothesis while preserving observable results.
+  It does not isolate one machine instruction or attribute the entire gain to
+  modulo alone.
+- **Decision:** Retained as `v1_precomputed_wrap`.
+- **Candidate V2 only:** Replace separately allocated two-dimensional rows with
+  one contiguous one-dimensional byte buffer while keeping V1's precomputed
+  indices and all other logic fixed. This targets row-indirection and locality
+  in the remaining neighbour/step hotspot. Validate with the same checksums and
+  formal matrix before retention. V2 is not implemented in this milestone step.

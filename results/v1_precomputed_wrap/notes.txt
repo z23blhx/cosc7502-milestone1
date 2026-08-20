@@ -32,3 +32,32 @@ Existing suite: PASS: 6 correctness tests.
 Tiny 101x101, 10-generation sanity result: live_cells=2213,
 checksum=7897773207305806522, matching V0. The login-node time is not formal
 benchmark evidence.
+
+Formal Rangpur benchmark
+-------------------------
+Slurm Job 562440 completed 0:0 on a100-0. It used the same formal matrix and
+resources as V0: 512, 1024, and 2048 square grids; 800 generations; density
+35%; seed 12345; five repetitions; one node/task/CPU; GCC 8.5.0; and the same
+`-O3 -DNDEBUG` benchmark flags. Every V1 live-cell count and checksum matched
+the corresponding V0 result.
+
+Median V1 runtimes were 1.276579850 s, 5.069925500 s, and 20.354371500 s.
+Against the V0 medians, these are speedups of 4.465737x, 4.490008x, and
+4.463521x, or runtime reductions of 77.607278%, 77.728327%, and 77.596164%.
+V1 coefficients of variation were 0.279608%, 0.126138%, and 0.093286%.
+
+Profiling
+---------
+Slurm Job 562441 completed 0:0 on a100-0 using the same V0 profile workload
+and `-O2 -g -pg` flags. V1 produced the same live-cell count and checksum as
+V0. In V1, gprof attributed 75.02% of sampled self time to
+`Life::live_neighbours` and 22.94% to `Life::step`, compared with 96.61% and
+3.54% respectively in V0. Profile-build wall time fell from 207.768831 s to
+92.7033395 s, but profile timings are diagnostic and are not substituted for
+the formal `-O3` benchmark.
+
+Decision
+--------
+Retain V1. The large, consistent formal speedup supports the hypothesis that
+repeated wrapped-index computation was a major part of the V0 hotspot. The
+remaining work is still dominated by cell stepping and neighbour access.
