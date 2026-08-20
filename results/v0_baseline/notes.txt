@@ -37,3 +37,12 @@ Exploratory plan
 Run 100 generations once for candidate square sizes 101, 256, 512, 1024,
 2048, and 4096 on one Rangpur compute node. Use the observed runtimes only to
 select a stable and reasonable final benchmark matrix.
+
+Exploratory scheduling correction
+---------------------------------
+Job 562428 requested one CPU and 1 GiB per CPU, but remained PENDING with
+Reason=PartitionConfig and never executed. Inspection showed ReqTRES mem=1G
+while every cosc3500 node reported MEMORY=1 MB to Slurm, despite larger actual
+FREE_MEM values. The memory directive was removed rather than replacing it with
+an invented value. This is a cluster scheduling configuration issue, not a
+program result.

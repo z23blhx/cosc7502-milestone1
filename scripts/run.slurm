@@ -6,9 +6,12 @@
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=1G
 #SBATCH --time=00:15:00
 #SBATCH --output=slurm/v0-explore-%j.out
+
+# No memory directive is used. On 2026-08-20, every cosc3500 node reported
+# MEMORY=1 MB to Slurm despite substantially larger FREE_MEM values. A 1 GiB
+# request therefore remained pending with reason PartitionConfig (job 562428).
 
 set -euo pipefail
 
@@ -26,6 +29,7 @@ uname -a
 echo "git_commit=$(git rev-parse HEAD)"
 echo "git_tag=$(git describe --tags --exact-match HEAD 2>/dev/null || echo untagged)"
 echo "compiler_flags=-std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG"
+echo "slurm_memory_request=none (cluster nodes report MEMORY=1 MB)"
 g++ --version
 lscpu
 scontrol show job "${SLURM_JOB_ID}"
