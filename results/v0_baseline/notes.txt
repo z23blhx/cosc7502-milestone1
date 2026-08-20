@@ -1,0 +1,111 @@
+V0 BASELINE WORKING NOTES
+=========================
+
+Source freeze
+-------------
+Commit: 15e13cd499178bc80740b710912679aef8c2f037
+Tag: v0_baseline
+Commit time: 2026-08-20T23:10:03+10:00
+Tag time: 2026-08-20T23:25:33+10:00
+
+Local Windows validation (sanity only; not formal benchmark evidence)
+---------------------------------------------------------------------
+Command: mingw32-make test
+Result: PASS: 6 correctness tests
+
+Command: build/benchmark/life --size 101 --generations 10 --density 35 --seed 12345 --csv
+Result: v0_baseline,101,101,10,35,12345,0.0017853,2213,7897773207305806522
+
+Rangpur login-node validation (sanity only; not formal benchmark evidence)
+----------------------------------------------------------------------------
+Date observed: 2026-08-20 (Australia/Brisbane)
+Login host: login0.compute.eait.uq.edu.au
+Compiler: g++ (GCC) 8.5.0 20210514 (Red Hat 8.5.0-28)
+gprof: GNU gprof 2.30-128.el8_10
+Checked-out commit: 15e13cd499178bc80740b710912679aef8c2f037
+Git state: detached at v0_baseline
+Correctness: PASS: 6 correctness tests
+
+Command: build/benchmark/life --size 101 --generations 10 --density 35 --seed 12345 --csv
+Result: v0_baseline,101,101,10,35,12345,0.003185838,2213,7897773207305806522
+
+The live-cell count and checksum match the local run. Neither timing above is
+used as formal Milestone 1 benchmark evidence.
+
+Exploratory plan
+----------------
+Run 100 generations once for candidate square sizes 101, 256, 512, 1024,
+2048, and 4096 on one Rangpur compute node. Use the observed runtimes only to
+select a stable and reasonable final benchmark matrix.
+
+Exploratory scheduling correction
+---------------------------------
+Job 562428 requested one CPU and 1 GiB per CPU, but remained PENDING with
+Reason=PartitionConfig and never executed. Inspection showed ReqTRES mem=1G
+while every cosc3500 node reported MEMORY=1 MB to Slurm, despite larger actual
+FREE_MEM values. The memory directive was removed rather than replacing it with
+an invented value. This is a cluster scheduling configuration issue, not a
+program result.
+
+Job 562429 removed the explicit memory request but was also initially pending
+with Reason=PartitionConfig. `scontrol show job` reported Account=s4828704,
+whereas `scontrol show partition cosc3500` reported AllowAccounts=cosc3500 and
+`sacctmgr show assoc` confirmed that the user has the cosc3500 association.
+The Slurm script was therefore updated to request account cosc3500 explicitly.
+
+Completed exploratory run
+-------------------------
+Job 562431 ran successfully on compute node a100-0 and `sacct` reported
+COMPLETED with ExitCode 0:0. For 100 generations, observed runtimes were:
+101: 0.029830707 s; 256: 0.189334888 s; 512: 0.754744665 s;
+1024: 3.01472788 s; 2048: 12.0281161 s; 4096: 48.2452432 s.
+The custom output path triggered a site task-epilog warning, so later scripts
+use the site's default slurm-%j.out path.
+
+Final benchmark matrix decision
+-------------------------------
+Use square sizes 512, 1024, and 2048; 800 generations; density 35%; seed 12345;
+and 5 repetitions per size. The initial 1000-generation plan requested a
+20-minute wall time (job 562433), but the actual cosc3500 QOS has MaxWall
+00:15:00, so the job remained pending and never executed. Scaling the observed
+exploratory times to 800 generations predicts approximately 6, 24, and 96
+seconds per repetition, or roughly 10.5 minutes for the matrix. This preserves
+identical generation counts and stable measurements while leaving about 4.5
+minutes of wall-time margin. Sizes 101 and 256 were excluded because their
+runs were too short; 4096 was excluded because five runs would be unnecessarily
+long for the available QOS limit.
+
+Formal job startup correction
+-----------------------------
+Job 562435 was submitted after the QOS correction but failed after one second
+with ExitCode 127:0 because a non-interactive SSH submission did not export
+/opt/slurm/bin into the job environment, so `scontrol` was not found. The
+scripts were updated to call /opt/slurm/bin/scontrol explicitly. No benchmark
+rows were produced by this failed job.
+
+Formal V0 benchmark result
+--------------------------
+Job 562436 completed successfully on a100-0 with ExitCode 0:0 in 00:09:58.
+The final matrix used sizes 512, 1024, and 2048; 800 generations; density 35%;
+seed 12345; and 5 repetitions per size. All five runs within each configuration
+produced identical live-cell counts and checksums.
+
+Median runtimes were 5.700869360 s (512), 22.764008200 s (1024), and
+90.852169800 s (2048). Coefficients of variation were 0.041868%, 0.052081%,
+and 0.092678%, respectively, indicating low run-to-run variability. Raw rows
+are preserved in raw.csv, the observed compute environment in environment.txt,
+and reproducible statistics in summary.csv via analysis/summarise.py.
+
+V0 profiling result
+-------------------
+Job 562437 completed successfully on a100-0 with ExitCode 0:0 in 00:03:28.
+The profiling build used -O2 -g -pg and the workload was 2048 x 2048 for 1000
+generations at density 35% and seed 12345. The program reported 207.768831 s,
+179032 live cells, and checksum 8829134737923947969.
+
+gprof attributed 96.61% (180.51 sampled seconds) to Life::live_neighbours over
+4,194,304,000 calls and 3.54% (6.61 seconds) to Life::step. It separately
+reported only 0.06% for Life::wrap, but -O2 may inline wrap work into
+live_neighbours, so the measured conclusion is that neighbour calculation is
+the dominant hotspot. Repeated modulo/wrapped-index work is a source-informed
+hypothesis to test independently in V1, not a separately proven bottleneck.

@@ -1,0 +1,41 @@
+V0 EXPLORATORY RANGPUR ENVIRONMENT
+==================================
+Job ID: 562431
+Job state: COMPLETED
+Exit code: 0:0
+Elapsed: 00:01:04
+Start: 2026-08-20T23:42:50+10:00
+End: 2026-08-20T23:43:54+10:00
+Compute node: a100-0
+Partition: cosc3500
+Account: cosc3500
+QOS: normal
+Nodes: 1
+Allocated CPUs: 1
+Tasks: 1
+CPUs per task: 1
+Memory request: none
+
+Source commit: 15e13cd499178bc80740b710912679aef8c2f037
+Source tag: v0_baseline
+Evidence/script commit: 2d789329369a46e8244210662a930e2c828e42c5
+Compiler: /usr/bin/g++
+Compiler version: GCC 8.5.0 20210514 (Red Hat 8.5.0-28)
+Compiler flags: -std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG
+Kernel: Linux 4.18.0-553.148.1.el8_10.x86_64
+
+CPU architecture: x86_64
+CPU model: AMD EPYC 7542 32-Core Processor (VMware virtualised node)
+Online CPUs visible on node: 8
+Threads per core: 1
+Sockets: 1
+Cores per socket: 8
+L1d cache: 32 KiB
+L1i cache: 32 KiB
+L2 cache: 512 KiB
+L3 cache: 16384 KiB
+
+Note: The job output ended with a site task-epilog warning because the first
+exploratory script used a custom output path. `sacct` nevertheless recorded the
+job and all steps as COMPLETED with ExitCode 0:0. Later scripts use the site's
+default slurm-%j.out location.
