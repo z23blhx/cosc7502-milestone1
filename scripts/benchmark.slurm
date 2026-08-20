@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --time=00:20:00
+#SBATCH --time=00:15:00
 #SBATCH --output=slurm-%j.out
 
 set -euo pipefail
@@ -33,7 +33,7 @@ evidence_commit="$(git rev-parse HEAD)"
 compute_hostname="$(hostname)"
 compiler_version="$(g++ -dumpfullversion -dumpversion)"
 compiler_flags="-std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG"
-generations=1000
+generations=800
 density=35
 seed=12345
 repetitions=5

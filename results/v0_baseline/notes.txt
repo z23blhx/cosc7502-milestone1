@@ -64,10 +64,13 @@ use the site's default slurm-%j.out path.
 
 Final benchmark matrix decision
 -------------------------------
-Use square sizes 512, 1024, and 2048; 1000 generations; density 35%; seed
-12345; and 5 repetitions per size. Expected runtimes from the exploratory run
-are approximately 7.5, 30, and 120 seconds per repetition. This gives stable
-measurements with identical generation counts while fitting the full matrix in
-roughly 13 minutes. Sizes 101 and 256 were excluded because 100-generation
-runs were too short; 4096 was excluded because five 1000-generation runs would
-take roughly 40 minutes before overhead.
+Use square sizes 512, 1024, and 2048; 800 generations; density 35%; seed 12345;
+and 5 repetitions per size. The initial 1000-generation plan requested a
+20-minute wall time (job 562433), but the actual cosc3500 QOS has MaxWall
+00:15:00, so the job remained pending and never executed. Scaling the observed
+exploratory times to 800 generations predicts approximately 6, 24, and 96
+seconds per repetition, or roughly 10.5 minutes for the matrix. This preserves
+identical generation counts and stable measurements while leaving about 4.5
+minutes of wall-time margin. Sizes 101 and 256 were excluded because their
+runs were too short; 4096 was excluded because five runs would be unnecessarily
+long for the available QOS limit.
