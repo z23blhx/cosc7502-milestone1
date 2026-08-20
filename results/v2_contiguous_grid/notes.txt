@@ -1,0 +1,66 @@
+V2 CONTIGUOUS-GRID WORKING NOTES
+================================
+
+Source freeze
+-------------
+Commit: eb599a441f759ace2fd3a693e51baf73dc568321
+Tag: v2_contiguous_grid
+
+Controlled change
+-----------------
+Replace each separately allocated `vector<vector<uint8_t>>` grid with one
+`vector<uint8_t>` in row-major order. Coordinates map to `y * width + x`, so
+cells with adjacent x coordinates are adjacent in the allocation. V1's four
+precomputed wrapped-coordinate arrays remain unchanged, as do the neighbour
+loops, Life rule, double buffer, cell type, traversal, interface, and flags.
+
+Hypothesis
+----------
+Contiguous row-major storage may reduce row indirection and make sequential
+memory access more locality/compiler friendly. This is a hypothesis to measure,
+not a claim that cache behaviour has already improved.
+
+Local correctness
+-----------------
+Existing suite: PASS: 6 correctness tests.
+Direct V0/V1/V2 comparisons matched live counts and checksums for 1x1, 2x3,
+101x101, 64x64, and rectangular 73x41 deterministic workloads.
+
+Rangpur login-node validation
+-----------------------------
+Checked-out HEAD and tag: eb599a441f759ace2fd3a693e51baf73dc568321
+Existing suite: PASS: 6 correctness tests.
+Tiny 101x101, 10-generation sanity result: live_cells=2213,
+checksum=7897773207305806522, matching V0/V1. Login-node time is not formal
+benchmark evidence.
+
+Formal Rangpur benchmark
+-------------------------
+Slurm Job 562443 completed 0:0 on a100-0. It used the same V0/V1 matrix and
+resources: 512, 1024, and 2048 square grids; 800 generations; density 35%;
+seed 12345; five repetitions; one node/task/CPU; GCC 8.5.0; and the same
+`-O3 -DNDEBUG` benchmark flags. Every V2 live-cell count and checksum matched
+both historical versions.
+
+Median V2 runtimes were 1.063583010 s, 4.206093940 s, and 16.924774400 s.
+Against V0, speedups were 5.360061x, 5.412149x, and 5.367999x. Against V1,
+incremental speedups were 1.200263x, 1.205376x, and 1.202638x, corresponding
+to runtime reductions of 16.684960%, 17.038348%, and 16.849437%.
+V2 coefficients of variation were 0.421498%, 0.035717%, and 0.053105%.
+
+Profiling
+---------
+Slurm Job 562444 completed 0:0 on a100-0 using the same V0/V1 profile workload
+and `-O2 -g -pg` flags. V2 reproduced the historical live-cell count and
+checksum. gprof attributed 82.38% (31.09 sampled seconds) to
+`Life::live_neighbours` and 14.42% (5.44 sampled seconds) to `Life::step`.
+The corresponding V1 self times were 40.96 s and 12.52 s. Profile-build wall
+time fell from 92.7033395 s in V1 to 72.447904 s in V2. Profiling remains
+diagnostic and is not substituted for the formal `-O3` results.
+
+Decision
+--------
+Retain V2. The consistent formal 1.20x incremental speedup is compatible with
+the hypothesis that contiguous row-major storage reduces row indirection and
+improves contiguous access, but this experiment does not independently prove
+the underlying cache mechanism.

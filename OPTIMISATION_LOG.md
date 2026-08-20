@@ -82,3 +82,45 @@
   indices and all other logic fixed. This targets row-indirection and locality
   in the remaining neighbour/step hotspot. Validate with the same checksums and
   formal matrix before retention. V2 is not implemented in this milestone step.
+
+## V2 - contiguous row-major grid
+
+- **Controlled change:** Replaced both `vector<vector<uint8_t>>` grids with
+  single `vector<uint8_t>` buffers using `y * width + x` row-major indexing.
+  V1's four wrapped-index arrays, nested neighbour loops, rule, double buffer,
+  cell type, traversal, interface, benchmark matrix, and flags were retained.
+- **Hypothesis:** One contiguous allocation may reduce row indirection and make
+  sequential access more locality/compiler friendly. Cache improvement is not
+  assumed without measurement.
+- **Tag and source commit:** `v2_contiguous_grid` at
+  `eb599a441f759ace2fd3a693e51baf73dc568321`.
+- **Correctness:** Six tests passed locally and on Rangpur. Five deterministic
+  V0/V1/V2 comparisons passed. All 15 formal V2 rows match V0 and V1 live-cell
+  counts and checksums.
+- **UQ environment and matrix:** Slurm Job 562443 ran on `a100-0`, partition and
+  account `cosc3500`, QOS `normal`, one node/task/CPU, GCC 8.5.0, and the same
+  `-O3 -DNDEBUG` flags. Sizes were 512/1024/2048, with 800 generations,
+  density 35%, seed 12345, and five repetitions.
+- **Medians:** 1.063583010 s, 4.206093940 s, and 16.924774400 s for 512, 1024,
+  and 2048 respectively.
+- **Speedup vs V0:** 5.360061x, 5.412149x, and 5.367999x, corresponding to
+  runtime reductions of 81.343494%, 81.523052%, and 81.371084%.
+- **Incremental speedup vs V1:** 1.200263x, 1.205376x, and 1.202638x,
+  corresponding to reductions of 16.684960%, 17.038348%, and 16.849437%.
+- **Variability:** V2 CVs were 0.421498%, 0.035717%, and 0.053105%.
+- **Profiling:** gprof Job 562444 used the matching `-O2 -g -pg` diagnostic
+  workload. `Life::live_neighbours` represented 82.38% and 31.09 sampled self
+  seconds; `Life::step` represented 14.42% and 5.44 s. Both absolute sampled
+  self times fell from V1's 40.96 s and 12.52 s. Profile-build wall time fell
+  from 92.7033395 s in V1 to 72.447904 s in V2. Formal speedup uses `-O3` data.
+- **Interpretation:** The roughly 1.20x incremental improvement is consistent
+  across sizes and larger than run-to-run variation. It is consistent with the
+  controlled contiguous-storage hypothesis, but does not independently prove a
+  cache mechanism.
+- **Decision:** Retained as `v2_contiguous_grid`.
+- **Candidate V3 only:** Explicitly sum the eight neighbour cells instead of
+  executing the current nested `dx`/`dy` loops and center-skip branch, while
+  retaining V2 storage, precomputed indices, rule, and all other controls. V2
+  profiling still attributes 82.38% of sampled self time to 4,194,304,000
+  `live_neighbours` calls, so removing loop/index/branch overhead directly
+  targets measured remaining work. V3 is not implemented here.

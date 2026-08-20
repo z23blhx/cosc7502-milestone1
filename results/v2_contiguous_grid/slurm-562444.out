@@ -1,0 +1,4 @@
+profile_file=results/v2_contiguous_grid/profile-562444.txt
+version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum
+v2_contiguous_grid,2048,2048,1000,35,12345,72.447904,179032,8829134737923947969
+=== V2 CONTIGUOUS-GRID PROFILE COMPLETE ===

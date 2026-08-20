@@ -1,0 +1,65 @@
+V2 DATA VALIDATION REPORT
+=========================
+
+Overall assessment: READY TO SHARE
+As of: 2026-08-21 (Australia/Brisbane)
+
+Question
+--------
+Does replacing separately allocated rows with one contiguous row-major byte
+buffer improve V1 without changing correctness under the same UQ workload?
+
+Controlling evidence
+--------------------
+- V0 formal data: Slurm Job 562436, a100-0.
+- V1 formal data: Slurm Job 562440, a100-0.
+- V2 formal data: Slurm Job 562443, a100-0.
+- V0/V1/V2 profiles: Slurm Jobs 562437, 562441, and 562444, a100-0.
+- Formal builds used GCC 8.5.0 and identical `-O3 -DNDEBUG` flags.
+- All formal jobs used one node, one task, and one CPU in `cosc3500`.
+
+Methodology checks
+------------------
+PASS: identical sizes, generations, density, seed, repetitions, compiler,
+flags, node, and requested CPU resources across all three formal versions.
+PASS: three configurations and exactly five numbered V2 repetitions.
+PASS: all 15 V2 elapsed times are positive; no runs were excluded.
+PASS: source version, source commit, tag, hostname, and job are recorded.
+PASS: median is the primary comparison; mean, range, sample standard deviation,
+and coefficient of variation are retained.
+
+Correctness checks
+------------------
+PASS: each V2 repetition has consistent live-cell count and checksum.
+PASS: V2 live-cell counts and checksums match V0 and V1 for every grid size.
+PASS: local tests, Rangpur tests, and five deterministic V0/V1/V2 cases passed.
+
+Calculation spot-checks
+-----------------------
+PASS: `analysis/summarise.py` regenerated V2 statistics from raw.csv.
+PASS: `analysis/compare_three_versions.py` verified all three matrices,
+repetition counts, live-cell counts, and checksums before calculating speedups.
+PASS: an independent PowerShell calculation reproduced all V2 speedups and
+runtime reductions after rounding.
+
+Results
+-------
+512: V2 1.063583010 s; 5.360061x vs V0; 1.200263x vs V1; CV 0.421498%.
+1024: V2 4.206093940 s; 5.412149x vs V0; 1.205376x vs V1; CV 0.035717%.
+2048: V2 16.924774400 s; 5.367999x vs V0; 1.202638x vs V1; CV 0.053105%.
+
+Reasonableness and caveats
+--------------------------
+- Incremental improvement is consistent across sizes and exceeds observed
+  within-configuration variation.
+- Results establish performance for this workload and node, not every CPU,
+  compiler, density, seed, or grid shape.
+- Versions ran as separate Slurm jobs instead of randomized interleaved trials.
+- gprof instrumentation changes code generation; profile time is diagnostic.
+- The controlled experiment is consistent with reduced row indirection and
+  improved contiguous access, but it does not directly measure cache events or
+  prove that cache locality alone caused the improvement.
+
+Blockers
+--------
+None for the Milestone 1 V2 comparison.

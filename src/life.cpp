@@ -8,8 +8,8 @@
 Life::Life(std::size_t width, std::size_t height)
     : width_(width),
       height_(height),
-      current_(height, std::vector<Cell>(width, 0)),
-      next_(height, std::vector<Cell>(width, 0)),
+      current_(width * height, 0),
+      next_(width * height, 0),
       x_prev_(width),
       x_next_(width),
       y_prev_(height),
@@ -39,12 +39,8 @@ std::size_t Life::height() const noexcept {
 }
 
 void Life::clear() noexcept {
-    for (auto& row : current_) {
-        std::fill(row.begin(), row.end(), Cell{0});
-    }
-    for (auto& row : next_) {
-        std::fill(row.begin(), row.end(), Cell{0});
-    }
+    std::fill(current_.begin(), current_.end(), Cell{0});
+    std::fill(next_.begin(), next_.end(), Cell{0});
 }
 
 void Life::randomise(double density_percent, std::uint32_t seed) {
@@ -61,10 +57,8 @@ void Life::randomise(double density_percent, std::uint32_t seed) {
     const auto threshold = static_cast<std::uint64_t>(
         (density_percent / 100.0) * static_cast<double>(outcomes));
 
-    for (auto& row : current_) {
-        for (auto& cell : row) {
-            cell = static_cast<Cell>(static_cast<std::uint64_t>(random()) < threshold);
-        }
+    for (auto& cell : current_) {
+        cell = static_cast<Cell>(static_cast<std::uint64_t>(random()) < threshold);
     }
 }
 
@@ -72,14 +66,14 @@ void Life::set(std::size_t x, std::size_t y, bool alive_state) {
     if (x >= width_ || y >= height_) {
         throw std::out_of_range("cell coordinate is outside the grid");
     }
-    current_[y][x] = static_cast<Cell>(alive_state);
+    current_[y * width_ + x] = static_cast<Cell>(alive_state);
 }
 
 bool Life::alive(std::size_t x, std::size_t y) const {
     if (x >= width_ || y >= height_) {
         throw std::out_of_range("cell coordinate is outside the grid");
     }
-    return current_[y][x] != 0;
+    return current_[y * width_ + x] != 0;
 }
 
 unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
@@ -91,7 +85,7 @@ unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
             if (dx == 0 && dy == 0) {
                 continue;
             }
-            count += current_[neighbour_y[dy + 1]][neighbour_x[dx + 1]];
+            count += current_[neighbour_y[dy + 1] * width_ + neighbour_x[dx + 1]];
         }
     }
     return count;
@@ -100,11 +94,14 @@ unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
 void Life::step() {
     // Read only from current_ and write only to next_. This makes the update
     // synchronous, matching NetLogo's separate neighbour-count/update phases.
+    // The flat grid maps (x, y) to y * width_ + x. Row-major order keeps cells
+    // with neighbouring x coordinates adjacent in one contiguous allocation.
     for (std::size_t y = 0; y < height_; ++y) {
+        const std::size_t row_offset = y * width_;
         for (std::size_t x = 0; x < width_; ++x) {
             const unsigned neighbours = live_neighbours(x, y);
-            next_[y][x] = static_cast<Cell>(
-                neighbours == 3 || (neighbours == 2 && current_[y][x] != 0));
+            next_[row_offset + x] = static_cast<Cell>(
+                neighbours == 3 || (neighbours == 2 && current_[row_offset + x] != 0));
         }
     }
     current_.swap(next_);
@@ -118,10 +115,8 @@ void Life::run(std::size_t generations) {
 
 std::uint64_t Life::live_count() const noexcept {
     std::uint64_t count = 0;
-    for (const auto& row : current_) {
-        for (Cell cell : row) {
-            count += cell;
-        }
+    for (Cell cell : current_) {
+        count += cell;
     }
     return count;
 }
@@ -140,10 +135,8 @@ std::uint64_t Life::checksum() const noexcept {
         mix(static_cast<std::uint8_t>(width_ >> shift));
         mix(static_cast<std::uint8_t>(height_ >> shift));
     }
-    for (const auto& row : current_) {
-        for (Cell cell : row) {
-            mix(cell);
-        }
+    for (Cell cell : current_) {
+        mix(cell);
     }
     return hash;
 }
