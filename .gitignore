@@ -1,0 +1,19 @@
+# Local course/reference files containing student-specific material
+COSC3500_Milestone.pdf
+Life.html
+COSC7502_Milestone1_UQ_Slurm_Guide.md
+
+# Build products
+build/
+life.exe
+life_tests.exe
+life
+life_tests
+*.o
+*.out
+*.prof
+gmon.out
+
+# Generated analysis artefacts (raw CSV results should remain versioned)
+analysis/*.csv
+analysis/*.png
