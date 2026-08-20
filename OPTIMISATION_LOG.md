@@ -124,3 +124,45 @@
   profiling still attributes 82.38% of sampled self time to 4,194,304,000
   `live_neighbours` calls, so removing loop/index/branch overhead directly
   targets measured remaining work. V3 is not implemented here.
+
+## V3 - explicit eight-neighbour summation
+
+- **Controlled change:** Replaced only the generic 3x3 `dx`/`dy` loops and
+  centre-skip branch in `live_neighbours` with an explicit sum of the eight
+  Moore neighbours. V2's flat buffers, wrapped indices, rule, double buffer,
+  cell type, traversal, interface, workload, and flags were retained.
+- **Hypothesis:** Removing generic loop control, center branching, and index
+  selection may reduce instruction overhead and expose a simpler fixed
+  computation to the compiler.
+- **Tag and source commit:** `v3_explicit_neighbours` at
+  `60ebf199d20f8ffacee92b49b50ae85c76f1e6ef`.
+- **Correctness:** Six tests passed locally and on Rangpur. Five deterministic
+  four-version comparisons passed. All 15 formal V3 rows match V0/V1/V2 live
+  counts and checksums.
+- **UQ environment and matrix:** Slurm Job 562448 ran on `a100-0`, partition and
+  account `cosc3500`, QOS `normal`, one node/task/CPU, GCC 8.5.0, and identical
+  `-O3 -DNDEBUG` flags. Sizes were 512/1024/2048, 800 generations, density 35%,
+  seed 12345, and five repetitions.
+- **Medians:** 1.010598950 s, 4.002820110 s, and 16.074788300 s.
+- **Speedup vs V0:** 5.641080x, 5.686993x, and 5.651842x, with runtime
+  reductions of 82.272898%, 82.416014%, and 82.306654%.
+- **Speedup vs V1:** 1.263191x, 1.266588x, and 1.266230x.
+- **Incremental speedup vs V2:** 1.052428x, 1.050783x, and 1.052877x, with
+  runtime reductions of 4.981657%, 4.832841%, and 5.022141%.
+- **Variability:** V3 CVs were 0.458922%, 0.114612%, and 0.087315%.
+- **Profiling:** gprof Job 562449 used the matching `-O2 -g -pg` diagnostic
+  workload. `Life::live_neighbours` fell from V2's 82.38% and 31.09 sampled
+  self seconds to 54.03% and 8.24 s. `Life::step` was 45.55% and 6.95 s versus
+  V2's 14.42% and 5.44 s. The profile-build wall time fell from 72.447904 s to
+  47.1564199 s. Formal conclusions use the `-O3` benchmark.
+- **Interpretation:** The roughly 5% formal incremental improvement is
+  consistent across problem sizes and exceeds observed variation. Explicit
+  summation therefore provides a modest but repeatable benefit.
+- **Decision:** RETAIN as `v3_explicit_neighbours`.
+- **Candidate V4 only:** Precompute the three row-start offsets needed for each
+  y coordinate (previous, current, and next row), then reuse them in
+  `live_neighbours` while keeping V3's explicit eight-cell sum unchanged. V3
+  still spends 54.03% and 8.24 sampled self seconds in 4,194,304,000 neighbour
+  calls, and the function currently performs three `row * width_` calculations
+  per call. This controlled change directly targets repeated linear-index
+  calculation. V4 is not implemented here.

@@ -33,3 +33,33 @@ Existing suite: PASS: 6 correctness tests.
 Tiny 101x101, 10-generation sanity result: live_cells=2213,
 checksum=7897773207305806522, matching V0/V1/V2. Login-node time is not formal
 benchmark evidence.
+
+Formal Rangpur benchmark
+-------------------------
+Slurm Job 562448 completed 0:0 on a100-0. It used the same V0/V1/V2 matrix and
+resources: 512, 1024, and 2048 square grids; 800 generations; density 35%;
+seed 12345; five repetitions; one node/task/CPU; GCC 8.5.0; and the same
+`-O3 -DNDEBUG` flags. Every V3 live-cell count and checksum matched all three
+historical versions.
+
+Median V3 runtimes were 1.010598950 s, 4.002820110 s, and 16.074788300 s.
+Against V0, speedups were 5.641080x, 5.686993x, and 5.651842x. Against V2,
+incremental speedups were 1.052428x, 1.050783x, and 1.052877x, corresponding
+to runtime reductions of 4.981657%, 4.832841%, and 5.022141%.
+V3 coefficients of variation were 0.458922%, 0.114612%, and 0.087315%.
+
+Profiling
+---------
+Slurm Job 562449 completed 0:0 on a100-0 using the matching diagnostic workload
+and `-O2 -g -pg` flags. V3 reproduced the historical live-cell count and
+checksum. gprof attributed 54.03% (8.24 sampled self seconds) to
+`Life::live_neighbours` and 45.55% (6.95 s) to `Life::step`. V2 attributed
+82.38% (31.09 s) and 14.42% (5.44 s) respectively. The profile-build wall time
+fell from 72.447904 s to 47.1564199 s. Profiling remains diagnostic and does
+not replace the formal `-O3` comparison.
+
+Decision
+--------
+Retain V3. Its roughly 5% formal incremental improvement is consistent across
+all sizes and exceeds run-to-run variability. This supports the fixed
+eight-neighbour summation as a useful controlled optimisation.

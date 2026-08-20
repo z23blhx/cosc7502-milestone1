@@ -1,0 +1,4 @@
+profile_file=results/v3_explicit_neighbours/profile-562449.txt
+version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum
+v3_explicit_neighbours,2048,2048,1000,35,12345,47.1564199,179032,8829134737923947969
+=== V3 EXPLICIT-NEIGHBOURS PROFILE COMPLETE ===
