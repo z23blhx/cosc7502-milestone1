@@ -2,6 +2,7 @@
 # Exploratory V0 timing only. This is not the final benchmark matrix.
 #SBATCH --job-name=life-v0-explore
 #SBATCH --partition=cosc3500
+#SBATCH --account=cosc3500
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
@@ -30,6 +31,7 @@ echo "git_commit=$(git rev-parse HEAD)"
 echo "git_tag=$(git describe --tags --exact-match HEAD 2>/dev/null || echo untagged)"
 echo "compiler_flags=-std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG"
 echo "slurm_memory_request=none (cluster nodes report MEMORY=1 MB)"
+echo "slurm_account=cosc3500"
 g++ --version
 lscpu
 scontrol show job "${SLURM_JOB_ID}"

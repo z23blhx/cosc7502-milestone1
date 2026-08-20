@@ -46,3 +46,9 @@ while every cosc3500 node reported MEMORY=1 MB to Slurm, despite larger actual
 FREE_MEM values. The memory directive was removed rather than replacing it with
 an invented value. This is a cluster scheduling configuration issue, not a
 program result.
+
+Job 562429 removed the explicit memory request but was also initially pending
+with Reason=PartitionConfig. `scontrol show job` reported Account=s4828704,
+whereas `scontrol show partition cosc3500` reported AllowAccounts=cosc3500 and
+`sacctmgr show assoc` confirmed that the user has the cosc3500 association.
+The Slurm script was therefore updated to request account cosc3500 explicitly.
