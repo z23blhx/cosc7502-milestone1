@@ -1,0 +1,35 @@
+V3 EXPLICIT-NEIGHBOURS WORKING NOTES
+====================================
+
+Source freeze
+-------------
+Commit: 60ebf199d20f8ffacee92b49b50ae85c76f1e6ef
+Tag: v3_explicit_neighbours
+
+Controlled change
+-----------------
+Replace the generic 3x3 `dx`/`dy` loops and centre-skip branch in
+`live_neighbours` with an explicit sum of the eight Moore neighbours. V2's
+contiguous buffers, four wrapped-coordinate arrays, Life rule, double buffer,
+cell type, traversal, interface, and compiler flags remain unchanged.
+
+Hypothesis
+----------
+Removing repeated inner-loop control, the centre branch, and generic array
+indexing may reduce instruction overhead in the dominant neighbour hotspot and
+present a simpler fixed computation to the compiler. Improvement is measured,
+not assumed.
+
+Local correctness
+-----------------
+Existing suite: PASS: 6 correctness tests.
+Direct V0/V1/V2/V3 comparisons matched live counts and checksums for 1x1,
+2x3, 101x101, 64x64, and rectangular 73x41 deterministic workloads.
+
+Rangpur login-node validation
+-----------------------------
+Checked-out HEAD and tag: 60ebf199d20f8ffacee92b49b50ae85c76f1e6ef
+Existing suite: PASS: 6 correctness tests.
+Tiny 101x101, 10-generation sanity result: live_cells=2213,
+checksum=7897773207305806522, matching V0/V1/V2. Login-node time is not formal
+benchmark evidence.
