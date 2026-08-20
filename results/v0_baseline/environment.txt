@@ -1,0 +1,83 @@
+benchmark_start=2026-08-21T00:05:14+10:00
+hostname=a100-0
+uname=Linux a100-0 4.18.0-553.148.1.el8_10.x86_64 #1 SMP Tue Jul 28 01:08:52 EDT 2026 x86_64 x86_64 x86_64 GNU/Linux
+source_commit=15e13cd499178bc80740b710912679aef8c2f037
+source_tag=v0_baseline
+evidence_commit=1c6a7c539b6ac9d26136f627bda5ca2a5e1858d1
+compiler=/usr/bin/g++
+compiler_version=8.5.0
+compiler_flags=-std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wshadow -O3 -DNDEBUG
+executable_sha256=5761223b59d4f04b8890f3bda60ee10e048c8a6fe3e53bd9a925a867ed93a092
+matrix_sizes=512,1024,2048
+generations=800
+density=35
+seed=12345
+repetitions=5
+slurm_partition=cosc3500
+slurm_account=cosc3500
+slurm_qos=normal
+slurm_nodes=1
+slurm_cpus_per_task=1
+slurm_memory_request=none
+
+g++ (GCC) 8.5.0 20210514 (Red Hat 8.5.0-28)
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              8
+On-line CPU(s) list: 0-7
+Thread(s) per core:  1
+Core(s) per socket:  8
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           AuthenticAMD
+CPU family:          23
+Model:               0
+Model name:          AMD EPYC 7542 32-Core Processor
+Stepping:            0
+CPU MHz:             2894.561
+BogoMIPS:            5789.12
+Hypervisor vendor:   VMware
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            512K
+L3 cache:            16384K
+NUMA node0 CPU(s):   0-7
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl tsc_reliable nonstop_tsc cpuid extd_apicid pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext ssbd ibpb vmmcall fsgsbase bmi1 avx2 smep bmi2 rdseed adx smap clflushopt sha_ni xsaveopt xsavec xsaves clzero arat overflow_recov succor
+
+JobId=562436 JobName=life-v0-benchmark
+   UserId=s4828704(2762369) GroupId=uusers(10000) MCS_label=N/A
+   Priority=1 Nice=0 Account=cosc3500 QOS=normal
+   JobState=RUNNING Reason=None Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:01 TimeLimit=00:15:00 TimeMin=N/A
+   SubmitTime=2026-08-21T00:05:13 EligibleTime=2026-08-21T00:05:13
+   AccrueTime=2026-08-21T00:05:13
+   StartTime=2026-08-21T00:05:13 EndTime=2026-08-21T00:20:13 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-08-21T00:05:13 Scheduler=Main
+   Partition=cosc3500 AllocNode:Sid=login0:3045171
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=a100-0
+   BatchHost=a100-0
+   NumNodes=1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=1,mem=1M,node=1,billing=1
+   AllocTRES=cpu=1,node=1,billing=1
+   Socks/Node=* NtasksPerN:B:S:C=1:0:*:* CoreSpec=*
+   MinCPUsNode=1 MinMemoryNode=0 MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/home/Student/s4828704/cosc3500/milestone1/scripts/benchmark.slurm
+   SubmitLine=/opt/slurm/bin/sbatch scripts/benchmark.slurm
+   WorkDir=/home/Student/s4828704/cosc3500/milestone1
+   StdErr=
+   StdIn=/dev/null
+   StdOut=/home/Student/s4828704/cosc3500/milestone1/slurm-562436.out
+   TresPerTask=cpu=1
+
+benchmark_end=2026-08-21T00:15:11+10:00

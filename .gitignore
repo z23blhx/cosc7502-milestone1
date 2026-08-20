@@ -18,3 +18,8 @@ gmon.out
 # Generated analysis artefacts (raw CSV results should remain versioned)
 analysis/*.csv
 analysis/*.png
+
+# Downloaded job-specific copies; stable evidence filenames are versioned.
+results/*/raw-[0-9]*.csv
+results/*/environment-[0-9]*.txt
+results/*/profile-[0-9]*.txt

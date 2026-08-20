@@ -82,3 +82,16 @@ with ExitCode 127:0 because a non-interactive SSH submission did not export
 /opt/slurm/bin into the job environment, so `scontrol` was not found. The
 scripts were updated to call /opt/slurm/bin/scontrol explicitly. No benchmark
 rows were produced by this failed job.
+
+Formal V0 benchmark result
+--------------------------
+Job 562436 completed successfully on a100-0 with ExitCode 0:0 in 00:09:58.
+The final matrix used sizes 512, 1024, and 2048; 800 generations; density 35%;
+seed 12345; and 5 repetitions per size. All five runs within each configuration
+produced identical live-cell counts and checksums.
+
+Median runtimes were 5.700869360 s (512), 22.764008200 s (1024), and
+90.852169800 s (2048). Coefficients of variation were 0.041868%, 0.052081%,
+and 0.092678%, respectively, indicating low run-to-run variability. Raw rows
+are preserved in raw.csv, the observed compute environment in environment.txt,
+and reproducible statistics in summary.csv via analysis/summarise.py.
