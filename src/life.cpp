@@ -49,8 +49,8 @@ void Life::randomise(double density_percent, std::uint32_t seed) {
     }
 
     // mt19937 has a standardised output sequence. Comparing its integer output
-    // with an explicit threshold keeps seeded initial states reproducible across
-    // the local machine and Rangpur's C++ standard library.
+    // with an explicit threshold makes a seed reproduce the same starting grid
+    // locally and on Rangpur, which keeps version comparisons fair.
     std::mt19937 random(seed);
     constexpr std::uint64_t outcomes =
         static_cast<std::uint64_t>(std::numeric_limits<std::uint32_t>::max()) + 1ULL;
@@ -83,8 +83,9 @@ unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
     const std::size_t row_here = y * width_;
     const std::size_t row_below = y_next_[y] * width_;
 
-    // A Moore neighbourhood always contains these eight cells, so a generic
-    // 3x3 loop and centre-skip branch are unnecessary.
+    // A Moore neighbourhood contains exactly these eight cells. Listing them
+    // explicitly avoids a generic 3x3 loop and its centre-skip branch while
+    // leaving the toroidal neighbour semantics unchanged.
     return current_[row_above + xm] + current_[row_above + x] +
            current_[row_above + xp] + current_[row_here + xm] +
            current_[row_here + xp] + current_[row_below + xm] +
@@ -92,8 +93,8 @@ unsigned Life::live_neighbours(std::size_t x, std::size_t y) const noexcept {
 }
 
 void Life::step() {
-    // Read only from current_ and write only to next_. This makes the update
-    // synchronous, matching NetLogo's separate neighbour-count/update phases.
+    // Read only from current_ and write only to next_. Swapping only after every
+    // cell is calculated preserves Game of Life's synchronous generation rule.
     // The flat grid maps (x, y) to y * width_ + x. Row-major order keeps cells
     // with neighbouring x coordinates adjacent in one contiguous allocation.
     for (std::size_t y = 0; y < height_; ++y) {
@@ -122,8 +123,8 @@ std::uint64_t Life::live_count() const noexcept {
 }
 
 std::uint64_t Life::checksum() const noexcept {
-    // FNV-1a over dimensions and cells is inexpensive, deterministic, and
-    // sensitive to cell positions (unlike the live-cell count alone).
+    // FNV-1a over dimensions and cells is deterministic and sensitive to cell
+    // positions, so it can detect mismatches that live_count() alone cannot.
     std::uint64_t hash = 14695981039346656037ULL;
     constexpr std::uint64_t prime = 1099511628211ULL;
     const auto mix = [&hash](std::uint8_t byte) {
