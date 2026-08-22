@@ -13,6 +13,8 @@
 namespace {
 
 struct Options {
+    // Keeping every workload parameter on the CLI makes benchmark runs explicit
+    // and reproducible across machines and optimisation versions.
     std::size_t width = 101;
     std::size_t height = 101;
     std::size_t generations = 1000;
@@ -105,14 +107,16 @@ int main(int argc, char* argv[]) {
         Life simulation(options.width, options.height);
         simulation.randomise(options.density, options.seed);
 
-        // Only the generation updates are timed: allocation, random setup,
-        // checksum calculation, and console output are deliberately excluded.
+        // Construct and randomise before starting the timer so the measurement
+        // covers generation updates only, not workload setup.
         const auto start = std::chrono::steady_clock::now();
         simulation.run(options.generations);
         const auto finish = std::chrono::steady_clock::now();
         const std::chrono::duration<double> elapsed = finish - start;
 
         if (options.csv) {
+            // CSV provides a stable machine-readable record for benchmark scripts;
+            // correctness checks and output formatting remain outside the timer.
             std::cout << "version,width,height,generations,density,seed,elapsed_seconds,live_cells,checksum\n";
             std::cout << "v3_explicit_neighbours," << options.width << ',' << options.height << ','
                       << options.generations << ',' << options.density << ',' << options.seed << ','
